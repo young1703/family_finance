@@ -31,9 +31,9 @@
           <button id="reset-layout" style="margin-left:8px;background:#334155;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;">레이아웃 초기화</button>
     </div>
     <div class="kpi">
-      <span>총수입: ₩5,200,000</span>
-      <span>총지출: ₩3,050,000</span>
-      <span>저축률: 41.3%</span>
+      <span id="kpi-income">총수입: -</span>
+      <span id="kpi-expense">총지출: -</span>
+      <span id="kpi-saving">저축률: -</span>
     </div>
   </header>
   <div class="wrap">
@@ -42,6 +42,18 @@
       <ul><li>수입</li><li>입출금계좌</li><li>고정지출</li><li>생활비</li><li>저축</li></ul>
       <p>실선: 잔액 / 점선: 유입</p>
       <p>노드를 클릭하면 상세가 우측에 표시됩니다.</p>
+      <hr />
+      <h4>흐름 추가 (데모)</h4>
+      <form id="flow-form">
+        <label>From</label><br />
+        <select id="flow-from"></select><br />
+        <label>To</label><br />
+        <select id="flow-to"></select><br />
+        <label>금액</label><br />
+        <input id="flow-amount" type="number" min="0" step="1000" value="100000" style="width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:6px;"/><br /><br />
+        <button type="submit" style="width:100%;background:#0284c7;color:white;border:none;border-radius:6px;padding:8px;">추가</button>
+      </form>
+
     </aside>
     <main class="graph">
       <svg id="graph" viewBox="0 0 1000 640" aria-label="finance-graph"></svg>

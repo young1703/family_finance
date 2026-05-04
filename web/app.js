@@ -23,8 +23,12 @@ let dragging = null;
 const svg = document.querySelector('#graph');
 const detail = document.querySelector('#detail');
 const resetButton = document.querySelector('#reset-layout');
+const flowForm = document.querySelector('#flow-form');
+const fromSelect = document.querySelector('#flow-from');
+const toSelect = document.querySelector('#flow-to');
+const amountInput = document.querySelector('#flow-amount');
 
-const fmt = (n) => `₩${n.toLocaleString('ko-KR')}`;
+const fmt = (n) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 
 function loadState() {
   try {
@@ -50,17 +54,50 @@ function linkPath(a, b) {
   return `M${a.x},${a.y} C${c1x},${a.y} ${c2x},${b.y} ${b.x - b.r},${b.y}`;
 }
 
+function updateKpis() {
+  const totalIncome = state.flows.filter((f) => f.from === 'income').reduce((sum, f) => sum + f.amount, 0);
+  const totalExpense = state.flows.filter((f) => ['subs', 'living'].includes(f.to)).reduce((sum, f) => sum + f.amount, 0);
+  const totalSaving = state.flows.filter((f) => f.to === 'saving').reduce((sum, f) => sum + f.amount, 0);
+  const savingRate = totalIncome > 0 ? (totalSaving / totalIncome) * 100 : 0;
+
+  document.querySelector('#kpi-income').textContent = `총수입: ${fmt(totalIncome)}`;
+  document.querySelector('#kpi-expense').textContent = `총지출: ${fmt(totalExpense)}`;
+  document.querySelector('#kpi-saving').textContent = `저축률: ${savingRate.toFixed(1)}%`;
+}
+
+function refreshNodeInflows() {
+  for (const node of state.nodes) node.inflow = 0;
+  for (const flow of state.flows) {
+    const toNode = nodeById(flow.to);
+    if (toNode) toNode.inflow += flow.amount;
+  }
+}
+
+function populateFlowSelects() {
+  fromSelect.innerHTML = '';
+  toSelect.innerHTML = '';
+  for (const node of state.nodes) {
+    const o1 = document.createElement('option');
+    o1.value = node.id;
+    o1.textContent = node.name;
+    fromSelect.appendChild(o1);
+
+    const o2 = document.createElement('option');
+    o2.value = node.id;
+    o2.textContent = node.name;
+    toSelect.appendChild(o2);
+  }
+  fromSelect.value = 'account';
+  toSelect.value = 'living';
+}
+
 function render() {
-  svg.innerHTML = `
-    <defs>
-      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"></path>
-      </marker>
-    </defs>`;
+  svg.innerHTML = `<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"></path></marker></defs>`;
 
   for (const flow of state.flows) {
     const from = nodeById(flow.from);
     const to = nodeById(flow.to);
+    if (!from || !to) continue;
     const width = Math.max(2, Math.log10(flow.amount + 1) - 1);
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -84,7 +121,6 @@ function render() {
     circle.setAttribute('cx', String(n.x));
     circle.setAttribute('cy', String(n.y));
     circle.setAttribute('r', String(n.r));
-    circle.dataset.id = n.id;
     circle.addEventListener('click', () => selectNode(n.id));
     circle.addEventListener('pointerdown', (e) => startDrag(e, n.id));
     svg.appendChild(circle);
@@ -96,18 +132,14 @@ function render() {
     label.textContent = n.name;
     svg.appendChild(label);
   }
+
+  updateKpis();
 }
 
 function selectNode(id) {
   selectedNodeId = id;
   const n = nodeById(id);
-  detail.innerHTML = `
-    <p>노드명: <strong>${n.name}</strong></p>
-    <p>잔액: ${fmt(n.balance)}</p>
-    <p>월 유입: ${fmt(n.inflow)}</p>
-    <p>ID: <code>${n.id}</code></p>
-    <p>좌표: (${Math.round(n.x)}, ${Math.round(n.y)})</p>
-  `;
+  detail.innerHTML = `<p>노드명: <strong>${n.name}</strong></p><p>잔액: ${fmt(n.balance)}</p><p>월 유입: ${fmt(n.inflow)}</p><p>ID: <code>${n.id}</code></p><p>좌표: (${Math.round(n.x)}, ${Math.round(n.y)})</p>`;
   render();
 }
 
@@ -123,7 +155,6 @@ svg.addEventListener('pointermove', (event) => {
   pt.x = event.clientX;
   pt.y = event.clientY;
   const cursor = pt.matrixTransform(svg.getScreenCTM().inverse());
-
   const node = nodeById(dragging.id);
   node.x = Math.max(node.r, Math.min(1000 - node.r, cursor.x));
   node.y = Math.max(node.r, Math.min(640 - node.r, cursor.y));
@@ -137,12 +168,28 @@ svg.addEventListener('pointerup', (event) => {
   saveState();
 });
 
+flowForm?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const from = fromSelect.value;
+  const to = toSelect.value;
+  const amount = Number(amountInput.value || 0);
+  if (from === to || amount <= 0) return;
+  state.flows.push({ from, to, amount });
+  refreshNodeInflows();
+  saveState();
+  selectNode(to);
+});
+
 resetButton?.addEventListener('click', () => {
   state.nodes = structuredClone(defaultState.nodes);
   state.flows = structuredClone(defaultState.flows);
+  refreshNodeInflows();
   saveState();
+  populateFlowSelects();
   selectNode('account');
 });
 
+refreshNodeInflows();
+populateFlowSelects();
 render();
 selectNode(selectedNodeId);
