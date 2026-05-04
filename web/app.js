@@ -27,6 +27,7 @@ const flowForm = document.querySelector('#flow-form');
 const fromSelect = document.querySelector('#flow-from');
 const toSelect = document.querySelector('#flow-to');
 const amountInput = document.querySelector('#flow-amount');
+const flowList = document.querySelector('#flow-list');
 
 const fmt = (n) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 
@@ -89,6 +90,38 @@ function populateFlowSelects() {
   }
   fromSelect.value = 'account';
   toSelect.value = 'living';
+}
+
+
+function renderFlowList() {
+  flowList.innerHTML = '';
+  state.flows.forEach((flow, idx) => {
+    const li = document.createElement('li');
+    li.style.marginBottom = '6px';
+    const fromName = nodeById(flow.from)?.name ?? flow.from;
+    const toName = nodeById(flow.to)?.name ?? flow.to;
+    li.innerHTML = `<span>${fromName} → ${toName} (${fmt(flow.amount)})</span> `;
+
+    const del = document.createElement('button');
+    del.textContent = '삭제';
+    del.style.marginLeft = '8px';
+    del.style.background = '#7f1d1d';
+    del.style.color = '#fff';
+    del.style.border = 'none';
+    del.style.borderRadius = '4px';
+    del.style.padding = '2px 6px';
+    del.addEventListener('click', () => {
+      state.flows.splice(idx, 1);
+      refreshNodeInflows();
+      saveState();
+      renderFlowList();
+      render();
+      selectNode(selectedNodeId);
+    });
+
+    li.appendChild(del);
+    flowList.appendChild(li);
+  });
 }
 
 function render() {
@@ -177,6 +210,7 @@ flowForm?.addEventListener('submit', (event) => {
   state.flows.push({ from, to, amount });
   refreshNodeInflows();
   saveState();
+  renderFlowList();
   selectNode(to);
 });
 
@@ -186,10 +220,12 @@ resetButton?.addEventListener('click', () => {
   refreshNodeInflows();
   saveState();
   populateFlowSelects();
+  renderFlowList();
   selectNode('account');
 });
 
 refreshNodeInflows();
 populateFlowSelects();
+renderFlowList();
 render();
 selectNode(selectedNodeId);
