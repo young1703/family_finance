@@ -31,3 +31,12 @@
   - `./scripts/sync_base.sh main work`
 - Open a fresh feature branch per PR from `main` when possible.
 - Keep PRs small (schema, API, UI split) to reduce merge conflicts.
+
+
+## Local DB one-command test
+
+- Start DB: `make up`
+- Run full DB validation: `make test-db`
+- Stop DB: `make down`
+
+Default connection: `postgres://postgres:postgres@localhost:5432/family_finance`.
