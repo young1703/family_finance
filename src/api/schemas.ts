@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { infer as ZodInfer } from "zod";
 
 export const currencyCodeSchema = z
   .string()
@@ -55,13 +56,20 @@ export const flowCreateSchema = z
     note: z.string().max(500).optional()
   })
   .superRefine((v, ctx) => {
-    if (v.fromNodeId === v.toNodeId) {
+    const fromNodeId = v.fromNodeId as string;
+    const toNodeId = v.toNodeId as string;
+    const endDate = v.endDate as string | undefined;
+    const startDate = v.startDate as string;
+    const cycle = v.cycle as string;
+    const dayOfMonth = v.dayOfMonth as number | undefined;
+
+    if (fromNodeId === toNodeId) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "fromNodeId and toNodeId must differ" });
     }
-    if (v.endDate && v.endDate < v.startDate) {
+    if (endDate && endDate < startDate) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "endDate must be after startDate" });
     }
-    if (v.cycle === "monthly" && !v.dayOfMonth) {
+    if (cycle === "monthly" && !dayOfMonth) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "dayOfMonth is required for monthly flows" });
     }
   });
@@ -75,9 +83,9 @@ export const fxQuerySchema = z.object({
   quote: currencyCodeSchema
 });
 
-export type HouseholdCreateInput = z.infer<typeof householdCreateSchema>;
-export type MemberInviteInput = z.infer<typeof memberInviteSchema>;
-export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>;
-export type NodeCreateInput = z.infer<typeof nodeCreateSchema>;
-export type NodePositionInput = z.infer<typeof nodePositionSchema>;
-export type FlowCreateInput = z.infer<typeof flowCreateSchema>;
+export type HouseholdCreateInput = ZodInfer<typeof householdCreateSchema>;
+export type MemberInviteInput = ZodInfer<typeof memberInviteSchema>;
+export type CategoryCreateInput = ZodInfer<typeof categoryCreateSchema>;
+export type NodeCreateInput = ZodInfer<typeof nodeCreateSchema>;
+export type NodePositionInput = ZodInfer<typeof nodePositionSchema>;
+export type FlowCreateInput = ZodInfer<typeof flowCreateSchema>;

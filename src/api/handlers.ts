@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ZodType } from "zod";
 import { badRequest } from "./errors";
 import {
   categoryCreateSchema,
@@ -25,10 +26,10 @@ const nodeIdParamSchema = z.object({ nodeId: z.string().uuid() });
 
 type JsonResult<T> = { status: number; data: T };
 
-const parseOrThrow = <T>(schema: z.ZodType<T>, payload: unknown): T => {
+const parseOrThrow = <T>(schema: ZodType<T>, payload: unknown): T => {
   const parsed = schema.safeParse(payload);
   if (!parsed.success) {
-    throw badRequest(parsed.error.issues.map((issue) => issue.message).join(", "), "VALIDATION_ERROR");
+    throw badRequest(parsed.error.issues.map((issue: { message: string }) => issue.message).join(", "), "VALIDATION_ERROR");
   }
   return parsed.data;
 };
@@ -51,7 +52,7 @@ export const inviteMemberHandler = async (
 ): Promise<JsonResult<{ ok: true }>> => {
   const { id } = parseOrThrow(householdIdParamSchema, params);
   const input = parseOrThrow(memberInviteSchema, body);
-  await repos.households.inviteMember(id, input, ctx);
+  await repos.households.inviteMember(id as string, input, ctx);
   return { status: 200, data: { ok: true } };
 };
 
@@ -63,7 +64,7 @@ export const createCategoryHandler = async (
 ): Promise<JsonResult<{ id: string }>> => {
   const { id } = parseOrThrow(householdIdParamSchema, params);
   const input = parseOrThrow(categoryCreateSchema, body);
-  return { status: 201, data: await repos.categories.create(id, input, ctx) };
+  return { status: 201, data: await repos.categories.create(id as string, input, ctx) };
 };
 
 export const createNodeHandler = async (
@@ -74,7 +75,7 @@ export const createNodeHandler = async (
 ): Promise<JsonResult<{ id: string }>> => {
   const { id } = parseOrThrow(householdIdParamSchema, params);
   const input = parseOrThrow(nodeCreateSchema, body);
-  return { status: 201, data: await repos.nodes.create(id, input, ctx) };
+  return { status: 201, data: await repos.nodes.create(id as string, input, ctx) };
 };
 
 export const updateNodePositionHandler = async (
@@ -85,7 +86,7 @@ export const updateNodePositionHandler = async (
 ): Promise<JsonResult<{ ok: true }>> => {
   const { nodeId } = parseOrThrow(nodeIdParamSchema, params);
   const input = parseOrThrow(nodePositionSchema, body);
-  await repos.nodes.updatePosition(nodeId, input, ctx);
+  await repos.nodes.updatePosition(nodeId as string, input, ctx);
   return { status: 200, data: { ok: true } };
 };
 
@@ -97,7 +98,7 @@ export const createFlowHandler = async (
 ): Promise<JsonResult<{ id: string }>> => {
   const { id } = parseOrThrow(householdIdParamSchema, params);
   const input = parseOrThrow(flowCreateSchema, body);
-  return { status: 201, data: await repos.flows.create(id, input, ctx) };
+  return { status: 201, data: await repos.flows.create(id as string, input, ctx) };
 };
 
 export const dashboardHandler = async (
@@ -108,7 +109,7 @@ export const dashboardHandler = async (
 ): Promise<JsonResult<Awaited<ReturnType<DashboardRepository["get"]>>>> => {
   const { id } = parseOrThrow(householdIdParamSchema, params);
   const { month } = parseOrThrow(dashboardQuerySchema, query);
-  const data = await repos.dashboard.get(id, month, ctx);
+  const data = await repos.dashboard.get(id as string, month as string, ctx);
   return { status: 200, data };
 };
 
@@ -117,6 +118,6 @@ export const fxLatestHandler = async (
   repos: { fx: FxRepository }
 ): Promise<JsonResult<Awaited<ReturnType<FxRepository["getLatest"]>>>> => {
   const { base, quote } = parseOrThrow(fxQuerySchema, query);
-  const data = await repos.fx.getLatest(base, quote);
+  const data = await repos.fx.getLatest(base as string, quote as string);
   return { status: 200, data };
 };
