@@ -1,4 +1,6 @@
-const state = {
+const STORAGE_KEY = 'family_finance_demo_state_v1';
+
+const defaultState = {
   nodes: [
     { id: 'income', name: '급여 수입', x: 110, y: 180, r: 60, type: 'income', balance: 0, inflow: 5200000 },
     { id: 'account', name: '입출금 계좌', x: 490, y: 180, r: 70, type: 'account', balance: 2350000, inflow: 5200000 },
@@ -14,10 +16,29 @@ const state = {
   ]
 };
 
+const state = loadState();
+let selectedNodeId = 'account';
+let dragging = null;
+
 const svg = document.querySelector('#graph');
 const detail = document.querySelector('#detail');
+const resetButton = document.querySelector('#reset-layout');
 
 const fmt = (n) => `₩${n.toLocaleString('ko-KR')}`;
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return structuredClone(defaultState);
+    return JSON.parse(raw);
+  } catch {
+    return structuredClone(defaultState);
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
 function nodeById(id) {
   return state.nodes.find((n) => n.id === id);
@@ -59,12 +80,13 @@ function render() {
 
   for (const n of state.nodes) {
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('class', `node ${n.type === 'income' ? 'income' : ''}`);
+    circle.setAttribute('class', `node ${n.type === 'income' ? 'income' : ''} ${selectedNodeId === n.id ? 'selected' : ''}`);
     circle.setAttribute('cx', String(n.x));
     circle.setAttribute('cy', String(n.y));
     circle.setAttribute('r', String(n.r));
     circle.dataset.id = n.id;
     circle.addEventListener('click', () => selectNode(n.id));
+    circle.addEventListener('pointerdown', (e) => startDrag(e, n.id));
     svg.appendChild(circle);
 
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -77,14 +99,50 @@ function render() {
 }
 
 function selectNode(id) {
+  selectedNodeId = id;
   const n = nodeById(id);
   detail.innerHTML = `
     <p>노드명: <strong>${n.name}</strong></p>
     <p>잔액: ${fmt(n.balance)}</p>
     <p>월 유입: ${fmt(n.inflow)}</p>
     <p>ID: <code>${n.id}</code></p>
+    <p>좌표: (${Math.round(n.x)}, ${Math.round(n.y)})</p>
   `;
+  render();
 }
 
+function startDrag(event, id) {
+  event.preventDefault();
+  dragging = { id };
+  svg.setPointerCapture(event.pointerId);
+}
+
+svg.addEventListener('pointermove', (event) => {
+  if (!dragging) return;
+  const pt = svg.createSVGPoint();
+  pt.x = event.clientX;
+  pt.y = event.clientY;
+  const cursor = pt.matrixTransform(svg.getScreenCTM().inverse());
+
+  const node = nodeById(dragging.id);
+  node.x = Math.max(node.r, Math.min(1000 - node.r, cursor.x));
+  node.y = Math.max(node.r, Math.min(640 - node.r, cursor.y));
+  selectNode(node.id);
+});
+
+svg.addEventListener('pointerup', (event) => {
+  if (!dragging) return;
+  svg.releasePointerCapture(event.pointerId);
+  dragging = null;
+  saveState();
+});
+
+resetButton?.addEventListener('click', () => {
+  state.nodes = structuredClone(defaultState.nodes);
+  state.flows = structuredClone(defaultState.flows);
+  saveState();
+  selectNode('account');
+});
+
 render();
-selectNode('account');
+selectNode(selectedNodeId);
