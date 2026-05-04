@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Finance Graph Demo</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#0f172a; color:#e2e8f0; }
+    header { padding:16px 20px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; }
+    .kpi { display:flex; gap:16px; font-size:14px; }
+    .wrap { display:grid; grid-template-columns: 280px 1fr 280px; min-height: calc(100vh - 57px); }
+    .panel { border-right:1px solid #334155; padding:16px; }
+    .panel.right { border-right:none; border-left:1px solid #334155; }
+    .graph { position:relative; overflow:hidden; }
+    svg { width:100%; height:100%; }
+    .node { fill:#1e293b; stroke:#38bdf8; stroke-width:2; }
+    .node.income { stroke-dasharray: 6 4; }
+    .label { fill:#e2e8f0; font-size:13px; }
+    .amount { fill:#93c5fd; font-size:12px; }
+    .arrow { stroke:#60a5fa; fill:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>가족 자금 흐름 대시보드 (데모)</strong>
+    <div class="kpi">
+      <span>총수입: ₩5,200,000</span>
+      <span>총지출: ₩3,050,000</span>
+      <span>저축률: 41.3%</span>
+    </div>
+  </header>
+  <div class="wrap">
+    <aside class="panel">
+      <h3>카테고리</h3>
+      <ul>
+        <li>수입</li><li>입출금계좌</li><li>고정지출</li><li>생활비</li><li>저축</li>
+      </ul>
+      <p>실선: 잔액 / 점선: 유입</p>
+    </aside>
+    <main class="graph">
+      <svg viewBox="0 0 1000 640" aria-label="finance-graph">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#60a5fa"></path>
+          </marker>
+        </defs>
+
+        <path class="arrow" d="M140,180 C280,180 320,140 430,140" stroke-width="7" marker-end="url(#arrow)" />
+        <text x="250" y="155" class="amount">₩5,200,000</text>
+
+        <path class="arrow" d="M530,170 C640,170 660,120 760,120" stroke-width="5" marker-end="url(#arrow)" />
+        <text x="640" y="110" class="amount">₩1,800,000</text>
+
+        <path class="arrow" d="M530,200 C640,220 690,250 760,280" stroke-width="4" marker-end="url(#arrow)" />
+        <text x="635" y="250" class="amount">₩900,000</text>
+
+        <path class="arrow" d="M530,220 C620,290 680,370 760,430" stroke-width="6" marker-end="url(#arrow)" />
+        <text x="620" y="360" class="amount">₩1,650,000</text>
+
+        <circle class="node income" cx="110" cy="180" r="60"></circle>
+        <text class="label" x="70" y="182">급여 수입</text>
+
+        <circle class="node" cx="490" cy="180" r="70"></circle>
+        <text class="label" x="435" y="184">입출금 계좌</text>
+
+        <circle class="node" cx="810" cy="120" r="50"></circle>
+        <text class="label" x="775" y="124">적금</text>
+
+        <circle class="node" cx="810" cy="280" r="45"></circle>
+        <text class="label" x="755" y="284">구독/통신</text>
+
+        <circle class="node" cx="810" cy="440" r="55"></circle>
+        <text class="label" x="770" y="444">생활비</text>
+      </svg>
+    </main>
+    <aside class="panel right">
+      <h3>선택 상세</h3>
+      <p>노드명: 입출금 계좌</p>
+      <p>잔액: ₩2,350,000</p>
+      <p>월 유입: ₩5,200,000</p>
+      <hr />
+      <p>다음 단계: 실제 API 연결 / 드래그 편집</p>
+    </aside>
+  </div>
+</body>
+</html>
