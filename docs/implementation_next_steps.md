@@ -47,3 +47,13 @@ Default connection: `postgres://postgres:postgres@localhost:5432/family_finance`
 - Run: `make ui-demo`
 - Open: `http://localhost:4173`
 - File: `web/index.html`
+
+
+## PR base hygiene (recommended flow)
+
+1. `./scripts/new_pr_branch.sh main feature/<task-name>`
+2. Make small scoped changes + commit.
+3. Open PR with base `main` and compare `feature/<task-name>`.
+4. After merge, delete feature branch locally/remotely.
+
+If you must continue on an existing branch, run `./scripts/sync_base.sh main <branch>` first.
