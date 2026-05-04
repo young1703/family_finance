@@ -15,10 +15,14 @@
 - Added `scripts/run_migration_smoke.sh` wrapper for `psql`-based execution.
 
 ## 3) Remaining follow-up tasks
-1. Add API layer and validation schemas (zod).
-2. Add monthly snapshot recalculation job.
-3. Add CI integration for migration smoke tests.
-4. Implement dashboard graph UI and connect with RLS-protected endpoints.
+1. Add monthly snapshot recalculation job.
+2. Implement dashboard graph UI and connect with RLS-protected endpoints.
+
+## 4) Completed since initial plan
+- API layer scaffolding and validation schemas were added under `src/api`.
+- CI integration was added at `.github/workflows/ci.yml`:
+  - TypeScript typecheck job
+  - PostgreSQL-backed migration + smoke-test job
 
 
 ## Git/PR workflow (to reduce conflicts)
