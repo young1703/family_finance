@@ -19,3 +19,11 @@
 2. Add monthly snapshot recalculation job.
 3. Add CI integration for migration smoke tests.
 4. Implement dashboard graph UI and connect with RLS-protected endpoints.
+
+
+## Git/PR workflow (to reduce conflicts)
+
+- Before starting each task, sync base and rebase work branch:
+  - `./scripts/sync_base.sh main work`
+- Open a fresh feature branch per PR from `main` when possible.
+- Keep PRs small (schema, API, UI split) to reduce merge conflicts.
