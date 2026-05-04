@@ -18,4 +18,8 @@
 1. Add API layer and validation schemas (zod).
 2. Add monthly snapshot recalculation job.
 3. Add CI integration for migration smoke tests.
+## 2) Remaining follow-up tasks
+1. Add API layer and validation schemas (zod).
+2. Add monthly snapshot recalculation job.
+3. Add automated migration tests (schema + policy smoke tests).
 4. Implement dashboard graph UI and connect with RLS-protected endpoints.
