@@ -15,10 +15,10 @@
 - Added `scripts/run_migration_smoke.sh` wrapper for `psql`-based execution.
 
 ## 3) Remaining follow-up tasks
-1. Add monthly snapshot recalculation job.
-2. Implement dashboard graph UI and connect with RLS-protected endpoints.
+1. Implement dashboard graph UI and connect with RLS-protected endpoints.
 
 ## 4) Completed since initial plan
+- Added SQL RPC `recalculate_monthly_snapshots(household_id, month, overwrite)` in `db/migrations/0004_monthly_snapshot_recalc.sql`.
 - API layer scaffolding and validation schemas were added under `src/api`.
 - CI integration was added at `.github/workflows/ci.yml`:
   - TypeScript typecheck job

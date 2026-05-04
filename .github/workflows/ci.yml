@@ -44,5 +44,6 @@ jobs:
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/0001_family_finance_init.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/0002_rls_and_seeds.sql
           psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/0003_auth_sync_and_household_bootstrap.sql
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/migrations/0004_monthly_snapshot_recalc.sql
       - name: Run smoke test
         run: ./scripts/run_migration_smoke.sh

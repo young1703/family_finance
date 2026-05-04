@@ -17,7 +17,8 @@ select proname from pg_proc where proname in (
   'is_household_member',
   'is_household_owner',
   'can_edit_household',
-  'create_household_with_owner'
+  'create_household_with_owner',
+  'recalculate_monthly_snapshots'
 ) order by proname;
 
 -- 3) RLS enabled checks
