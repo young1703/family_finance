@@ -40,3 +40,10 @@
 - Stop DB: `make down`
 
 Default connection: `postgres://postgres:postgres@localhost:5432/family_finance`.
+
+
+## UI Demo (first visible screen)
+
+- Run: `make ui-demo`
+- Open: `http://localhost:4173`
+- File: `web/index.html`

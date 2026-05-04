@@ -1,6 +1,6 @@
 DATABASE_URL ?= postgres://postgres:postgres@localhost:5432/family_finance
 
-.PHONY: up down db-wait db-reset db-migrate db-smoke test-db typecheck
+.PHONY: up down db-wait db-reset db-migrate db-smoke test-db typecheck ui-demo
 
 up:
 	docker compose up -d postgres
@@ -27,3 +27,6 @@ typecheck:
 	npm run typecheck
 
 test-db: db-wait db-reset db-migrate db-smoke
+
+ui-demo:
+	python3 -m http.server 4173 --directory web
