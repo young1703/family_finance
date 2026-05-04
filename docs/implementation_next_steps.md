@@ -10,6 +10,14 @@
   - `auth.users` -> `public.users` sync triggers (insert/update)
   - atomic household bootstrap RPC (`create_household_with_owner`)
 
+## 2) Smoke-test tooling status
+- Added `db/tests/policy_smoke.sql` to verify table/function existence, RLS enabled status, policy inventory, and system-category seed count.
+- Added `scripts/run_migration_smoke.sh` wrapper for `psql`-based execution.
+
+## 3) Remaining follow-up tasks
+1. Add API layer and validation schemas (zod).
+2. Add monthly snapshot recalculation job.
+3. Add CI integration for migration smoke tests.
 ## 2) Remaining follow-up tasks
 1. Add API layer and validation schemas (zod).
 2. Add monthly snapshot recalculation job.
