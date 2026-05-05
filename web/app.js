@@ -12,6 +12,8 @@ const fromSelect = document.querySelector('#flow-from');
 const toSelect = document.querySelector('#flow-to');
 const amountInput = document.querySelector('#flow-amount');
 const flowList = document.querySelector('#flow-list');
+const exportButton = document.querySelector('#export-json');
+const importInput = document.querySelector('#import-json');
 
 const fmt = (n) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 const nodeById = (id) => state.nodes.find((n) => n.id === id);
@@ -147,6 +149,28 @@ flowForm?.addEventListener('submit', async (event) => {
 resetButton?.addEventListener('click', async () => {
   await api.reset();
   await reload('account');
+});
+
+
+exportButton?.addEventListener('click', async () => {
+  const payload = await api.exportState();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'family-finance-demo.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+importInput?.addEventListener('change', async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const text = await file.text();
+  const parsed = JSON.parse(text);
+  await api.importState(parsed);
+  await reload('account');
+  event.target.value = '';
 });
 
 async function reload(nextSelectedId = selectedNodeId) {

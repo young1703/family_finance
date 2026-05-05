@@ -57,5 +57,16 @@ export const api = {
   async reset() {
     save(clone(defaultState));
     return { ok: true };
+  },
+  async exportState() {
+    return clone(load());
+  },
+
+  async importState(payload) {
+    if (!payload || !Array.isArray(payload.nodes) || !Array.isArray(payload.flows)) {
+      throw new Error('invalid state payload');
+    }
+    save(clone(payload));
+    return { ok: true };
   }
 };

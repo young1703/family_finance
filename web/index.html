@@ -28,7 +28,14 @@
     <div>
       <label for="month">월 선택</label>
       <select id="month"><option>2026-05</option><option>2026-04</option></select>
-          <button id="reset-layout" style="margin-left:8px;background:#334155;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;">레이아웃 초기화</button>
+          <button id="reset-layout" style="margin-left:8px;background:#334155;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;">레이아웃 초기화</button>      <div style="margin-top:10px;display:flex;gap:6px;">
+        <button id="export-json" style="flex:1;background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px;">내보내기</button>
+        <label style="flex:1;background:#334155;color:#fff;border-radius:6px;padding:6px;text-align:center;cursor:pointer;">
+          가져오기
+          <input id="import-json" type="file" accept="application/json" style="display:none;" />
+        </label>
+      </div>
+
     </div>
     <div class="kpi">
       <span id="kpi-income">총수입: -</span>
