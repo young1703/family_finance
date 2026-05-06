@@ -57,3 +57,8 @@ Default connection: `postgres://postgres:postgres@localhost:5432/family_finance`
 4. After merge, delete feature branch locally/remotely.
 
 If you must continue on an existing branch, run `./scripts/sync_base.sh main <branch>` first.
+
+
+## Detailed local run guide
+
+- See `docs/local_run_guide.md` for full local setup, DB validation, UI demo, troubleshooting, and checklist.

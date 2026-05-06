@@ -83,16 +83,19 @@
 파일:
 - `web/index.html`
 - `web/app.js`
+- `web/mockApi.js`
 
 현재 동작:
 - SVG 기반 그래프 렌더링
 - 노드 선택/상세 표시
 - 노드 드래그 이동 (위치 제한)
-- localStorage 기반 레이아웃/상태 저장
+- 월별 mock API 기반 localStorage 상태 저장
 - 흐름(Flow) 추가 폼
 - 흐름 목록 및 삭제
 - KPI(총수입/총지출/저축률) 동적 재계산
 - 레이아웃 초기화
+- JSON export/import
+- 월 선택별 독립 demo state
 
 한계:
 - 데모 데이터 in-memory/localStorage 사용
@@ -102,6 +105,9 @@
 ---
 
 ## 6) 로컬 개발/검증 방법
+
+### 상세 실행 문서
+- `docs/local_run_guide.md`를 먼저 확인하세요.
 
 ### 주요 명령
 - DB 기동: `make up`
