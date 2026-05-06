@@ -27,7 +27,7 @@
     <strong>가족 자금 흐름 대시보드 (데모)</strong>
     <div>
       <label for="month">월 선택</label>
-      <select id="month"><option>2026-05</option><option>2026-04</option></select>
+      <select id="month"><option value="2026-05">2026-05</option><option value="2026-04">2026-04</option><option value="2026-03">2026-03</option></select>
           <button id="reset-layout" style="margin-left:8px;background:#334155;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;">레이아웃 초기화</button>      <div style="margin-top:10px;display:flex;gap:6px;">
         <button id="export-json" style="flex:1;background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px;">내보내기</button>
         <label style="flex:1;background:#334155;color:#fff;border-radius:6px;padding:6px;text-align:center;cursor:pointer;">
@@ -71,7 +71,7 @@
       <h3>선택 상세</h3>
       <div id="detail"></div>
       <hr />
-      <p>다음 단계: 실제 API 연결 / 드래그 편집</p>
+      <p id="status" style="color:#93c5fd;">ready</p><p>다음 단계: 실제 API 연결 / 드래그 편집</p>
     </aside>
   </div>
   <script type="module" src="./app.js"></script>

@@ -1,6 +1,6 @@
-const STORAGE_KEY = 'family_finance_demo_state_v1';
+const STORAGE_KEY = 'family_finance_demo_state_v2';
 
-const defaultState = {
+const defaultMonthState = {
   nodes: [
     { id: 'income', name: '급여 수입', x: 110, y: 180, r: 60, type: 'income', balance: 0, inflow: 5200000 },
     { id: 'account', name: '입출금 계좌', x: 490, y: 180, r: 70, type: 'account', balance: 2350000, inflow: 5200000 },
@@ -17,56 +17,75 @@ const defaultState = {
 };
 
 function clone(v) { return JSON.parse(JSON.stringify(v)); }
-function load() {
+
+function loadStore() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return clone(defaultState);
+  if (!raw) return {};
   return JSON.parse(raw);
 }
-function save(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function saveStore(store) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+}
+
+function getMonthState(month) {
+  const store = loadStore();
+  if (!store[month]) {
+    store[month] = clone(defaultMonthState);
+    saveStore(store);
+  }
+  return clone(store[month]);
+}
+
+function setMonthState(month, monthState) {
+  const store = loadStore();
+  store[month] = clone(monthState);
+  saveStore(store);
+}
 
 export const api = {
-  async getDashboard() {
-    const state = load();
-    return clone(state);
+  async getDashboard(month) {
+    return getMonthState(month);
   },
 
-  async createFlow(payload) {
-    const state = load();
+  async createFlow(month, payload) {
+    const state = getMonthState(month);
     state.flows.push({ id: crypto.randomUUID(), ...payload });
-    save(state);
+    setMonthState(month, state);
     return { ok: true };
   },
 
-  async deleteFlow(flowId) {
-    const state = load();
+  async deleteFlow(month, flowId) {
+    const state = getMonthState(month);
     state.flows = state.flows.filter((f) => f.id !== flowId);
-    save(state);
+    setMonthState(month, state);
     return { ok: true };
   },
 
-  async updateNodePosition(nodeId, posX, posY) {
-    const state = load();
+  async updateNodePosition(month, nodeId, posX, posY) {
+    const state = getMonthState(month);
     const node = state.nodes.find((n) => n.id === nodeId);
     if (!node) throw new Error('node not found');
     node.x = posX;
     node.y = posY;
-    save(state);
+    setMonthState(month, state);
     return { ok: true };
   },
 
-  async reset() {
-    save(clone(defaultState));
+  async reset(month) {
+    setMonthState(month, clone(defaultMonthState));
     return { ok: true };
   },
-  async exportState() {
-    return clone(load());
+
+  async exportState(month) {
+    return getMonthState(month);
   },
 
-  async importState(payload) {
+  async importState(month, payload) {
     if (!payload || !Array.isArray(payload.nodes) || !Array.isArray(payload.flows)) {
       throw new Error('invalid state payload');
     }
-    save(clone(payload));
+    setMonthState(month, payload);
     return { ok: true };
   }
 };
