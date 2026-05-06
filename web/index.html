@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Finance Graph Demo</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#0f172a; color:#e2e8f0; }
+    header { padding:16px 20px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center; }
+    .kpi { display:flex; gap:16px; font-size:14px; }
+    .wrap { display:grid; grid-template-columns: 280px 1fr 280px; min-height: calc(100vh - 57px); }
+    .panel { border-right:1px solid #334155; padding:16px; }
+    .panel.right { border-right:none; border-left:1px solid #334155; }
+    .graph { position:relative; overflow:hidden; }
+    svg { width:100%; height:100%; }
+    .node { fill:#1e293b; stroke:#38bdf8; stroke-width:2; cursor:pointer; }
+    .node.income { stroke-dasharray: 6 4; }
+    .node.selected { stroke:#facc15; stroke-width:4; }
+    .label { fill:#e2e8f0; font-size:13px; pointer-events:none; }
+    .amount { fill:#93c5fd; font-size:12px; }
+    .arrow { stroke:#60a5fa; fill:none; }
+    select { background:#1e293b; color:#e2e8f0; border:1px solid #334155; padding:6px; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>가족 자금 흐름 대시보드 (데모)</strong>
+    <div>
+      <label for="month">월 선택</label>
+      <select id="month"><option value="2026-05">2026-05</option><option value="2026-04">2026-04</option><option value="2026-03">2026-03</option></select>
+          <button id="reset-layout" style="margin-left:8px;background:#334155;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:6px 10px;">레이아웃 초기화</button>      <div style="margin-top:10px;display:flex;gap:6px;">
+        <button id="export-json" style="flex:1;background:#1d4ed8;color:#fff;border:none;border-radius:6px;padding:6px;">내보내기</button>
+        <label style="flex:1;background:#334155;color:#fff;border-radius:6px;padding:6px;text-align:center;cursor:pointer;">
+          가져오기
+          <input id="import-json" type="file" accept="application/json" style="display:none;" />
+        </label>
+      </div>
+
+    </div>
+    <div class="kpi">
+      <span id="kpi-income">총수입: -</span>
+      <span id="kpi-expense">총지출: -</span>
+      <span id="kpi-saving">저축률: -</span>
+    </div>
+  </header>
+  <div class="wrap">
+    <aside class="panel">
+      <h3>카테고리</h3>
+      <ul><li>수입</li><li>입출금계좌</li><li>고정지출</li><li>생활비</li><li>저축</li></ul>
+      <p>실선: 잔액 / 점선: 유입</p>
+      <p>노드를 클릭하면 상세가 우측에 표시됩니다.</p>
+      <hr />
+      <h4>흐름 추가 (데모)</h4>
+      <form id="flow-form">
+        <label>From</label><br />
+        <select id="flow-from"></select><br />
+        <label>To</label><br />
+        <select id="flow-to"></select><br />
+        <label>금액</label><br />
+        <input id="flow-amount" type="number" min="0" step="1000" value="100000" style="width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:6px;"/><br /><br />
+        <button type="submit" style="width:100%;background:#0284c7;color:white;border:none;border-radius:6px;padding:8px;">추가</button>
+      </form>
+      <h4 style="margin-top:14px;">흐름 목록</h4>
+      <ul id="flow-list" style="padding-left:18px;"></ul>
+
+    </aside>
+    <main class="graph">
+      <svg id="graph" viewBox="0 0 1000 640" aria-label="finance-graph"></svg>
+    </main>
+    <aside class="panel right">
+      <h3>선택 상세</h3>
+      <div id="detail"></div>
+      <hr />
+      <p id="status" style="color:#93c5fd;">ready</p><p>다음 단계: 실제 API 연결 / 드래그 편집</p>
+    </aside>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
